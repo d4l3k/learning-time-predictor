@@ -50,7 +50,11 @@ func hashBytes(bytes []byte) string {
 func main() {
 	nameCleaningRegex := regexp.MustCompile(`[:/]`)
 	for {
-		feeds := []string{"http://images.drivebc.ca/bchighwaycam/pub/cameras/13.jpg"}
+		feeds := []string{
+			"http://images.drivebc.ca/bchighwaycam/pub/cameras/13.jpg",
+			"http://images.opentopia.com/cams/16267/big.jpg",
+			"http://images.opentopia.com/cams/9838/big.jpg",
+			}
 		for _, feed := range feeds {
 			cleanName := nameCleaningRegex.ReplaceAll([]byte(feed), []byte("-"))
 			dir := "./output/" + string(cleanName)
