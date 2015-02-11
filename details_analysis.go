@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gographics/imagick/imagick"
-
 	"io/ioutil"
 	"log"
 )
