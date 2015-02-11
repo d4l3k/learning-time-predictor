@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/fxsjy/gonn/gonn"
 	"github.com/gographics/imagick/imagick"
-
 	"io/ioutil"
 	"log"
 	"strings"
