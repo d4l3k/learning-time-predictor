@@ -14,6 +14,13 @@ import (
 	"time"
 )
 
+// NN Parameters
+const trainImageCount = 10000
+const testImageCount = 800
+const hiddenNodes = 400
+const trainingIterations = 10
+const series = true
+
 func ImageFiles(p string) []string {
 	filePaths := make([]string, 0)
 
@@ -56,10 +63,11 @@ func main() {
 
 	inputs := make([][]float64, 0)
 	outputs := make([][]float64, 0)
+	prev := make([]float64, 0)
 	count := 0
 	for _, filePath := range ImageFiles("output") {
 		//log.Println("File", count, filePath)
-		if count%10 == 0 {
+		if count%100 == 0 {
 			log.Println("File", count)
 		}
 		mw := imagick.NewMagickWand()
@@ -67,6 +75,8 @@ func main() {
 			log.Println(err)
 			continue
 		}
+		//mw.CropImage(width, height, x, y)
+		//mw.DisplayImage(os.Getenv("DISPLAY"))
 		mw.AdaptiveResizeImage(30, 30)
 		img, err := ConvertMWToImage(mw)
 		mw.Destroy()
@@ -94,7 +104,20 @@ func main() {
 				input[pos+2] = (float64)(b) / 0XFFFF
 			}
 		}
-		inputs = append(inputs, input)
+		if series {
+			final := make([]float64, width*height*3*2)
+			copy(final, input)
+			copy(final[len(input):], prev)
+			if len(prev) != 0 {
+				inputs = append(inputs, final)
+				prev = input
+			} else {
+				prev = input
+				continue
+			}
+		} else {
+			inputs = append(inputs, input)
+		}
 
 		filePieces := strings.Split(filePath, "/")
 		fileName := filePieces[len(filePieces)-1]
@@ -106,18 +129,21 @@ func main() {
 		timeNorm := (float64)(t.Hour()*60+t.Minute()) / (24.0 * 60.0)
 		outputs = append(outputs, []float64{timeNorm})
 		count += 1
-		if count > 8500 {
+		if count > (trainImageCount + testImageCount) {
 			break
 		}
 	}
-	sample := 8000
+	sample := trainImageCount
 
 	log.Println("Training network")
-	nn := gonn.NewNetwork(len(inputs[0]), 100, 1, false, 0.25, 0.1)
-	nn.Train(inputs[:sample], outputs[:sample], 10)
+	nn := gonn.NewNetwork(len(inputs[0]), hiddenNodes, 1, false, 0.25, 0.1)
+	nn.Train(inputs[:sample], outputs[:sample], trainingIterations)
 
 	testCount := 0.0
 	testSum := 0.0
+
+	timeBlockSum := make([]float64, 24)
+	timeBlockCount := make([]float64, 24)
 
 	for i, input := range inputs[sample:] {
 		predicted := nn.Forward(input)
@@ -126,10 +152,23 @@ func main() {
 		actualTime := actual[0] * 24
 
 		offset := math.Abs(predictedTime - actualTime)
-		log.Println("Test", offset, predictedTime, actualTime)
+
+		if 24-offset < offset {
+			offset = 24 - offset
+		}
+
+		log.Printf("Test Offset: %.2f, Predicted: %.2f, Actual: %.2f", offset, predictedTime, actualTime)
+
+		block := (int)(math.Floor(actualTime))
+		timeBlockSum[block] += offset
+		timeBlockCount[block] += 1
 
 		testCount += 1
 		testSum += offset
 	}
-	log.Println("Estimate:", testSum/testCount, testSum)
+	log.Printf("Estimate: average error is %.2f hours off", testSum/testCount)
+	for i, count := range timeBlockCount {
+		avg := timeBlockSum[i] / count
+		log.Printf("Hour: %d - %.2f", i, avg)
+	}
 }
