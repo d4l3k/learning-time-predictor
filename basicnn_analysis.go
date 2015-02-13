@@ -15,11 +15,13 @@ import (
 )
 
 // NN Parameters
-const trainImageCount = 10000
-const testImageCount = 800
-const hiddenNodes = 400
-const trainingIterations = 10
-const series = true
+const trainImageCount = 2000
+const testImageCount = 500
+const hiddenNodes = 800
+const trainingIterations = 2
+const series = false
+const width = 120
+const height = 80
 
 func ImageFiles(p string) []string {
 	filePaths := make([]string, 0)
@@ -77,7 +79,7 @@ func main() {
 		}
 		//mw.CropImage(width, height, x, y)
 		//mw.DisplayImage(os.Getenv("DISPLAY"))
-		mw.AdaptiveResizeImage(30, 30)
+		mw.AdaptiveResizeImage(width, height)
 		img, err := ConvertMWToImage(mw)
 		mw.Destroy()
 
