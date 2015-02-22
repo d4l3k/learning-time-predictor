@@ -1,0 +1,27 @@
+name: "traffic"
+layer {
+  name: "photos"
+  type: "ImageData"
+  top: "data"
+  top: "times"
+  include {
+    phase: TRAIN
+  }
+  image_data_param {
+    source: "./images_train.txt"
+    batch_size: 100
+  }
+}
+layer {
+  name: "photos"
+  type: "ImageData"
+  top: "data"
+  top: "times"
+  include {
+    phase: TEST
+  }
+  image_data_param {
+    source: "images_test.txt"
+    batch_size: 10
+  }
+}

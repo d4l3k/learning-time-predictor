@@ -72,7 +72,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			timeHours := (float64)(t.Hour()*60 + t.Minute())
+			timeHours := (float64)(t.Hour()*60+t.Minute()) / 60.0
 			//timeNorm := timeHours / (24.0 * 60.0)
 			outputs = append(outputs, []float64{timeHours})
 			fileInput := []float64{meanRed, stdevRed, meanBlue, stdevBlue, meanGreen, stdevGreen}
