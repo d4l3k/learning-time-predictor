@@ -31,14 +31,27 @@ layer {
   bottom: "data"
   top: "ip"
   inner_product_param {
-    num_output: 24
+    num_output: 1
+  }
+}
+layer {
+  name: "ip2"
+  type: "Pooling"
+  bottom: "label"
+  top: "ip2"
+  transform_param {
+    scale: 0.0006944444
+  }
+  pooling_param {
+    pool: MAX
+    kernel_size: 1 # pool over a 3x3 region
   }
 }
 layer {
   name: "accuracy"
   type: "Accuracy"
   bottom: "ip"
-  bottom: "label"
+  bottom: "ip2"
   top: "accuracy"
   include {
     phase: TEST
@@ -46,8 +59,8 @@ layer {
 }
 layer {
   name: "loss"
-  type: "SoftmaxWithLoss"
+  type: "EuclideanLoss"
   bottom: "ip"
-  bottom: "label"
+  bottom: "ip2"
   top: "loss"
 }

@@ -10,6 +10,6 @@ layer {
   bottom: "data"
   top: "ip"
   inner_product_param {
-    num_output: 24
+    num_output: 1
   }
 }
