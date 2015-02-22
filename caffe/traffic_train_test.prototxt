@@ -1,27 +1,53 @@
 name: "traffic"
 layer {
-  name: "photos"
+  name: "data"
   type: "ImageData"
   top: "data"
-  top: "times"
+  top: "label"
   include {
     phase: TRAIN
   }
   image_data_param {
     source: "./images_train.txt"
-    batch_size: 100
+    batch_size: 25
   }
 }
 layer {
-  name: "photos"
+  name: "data"
   type: "ImageData"
   top: "data"
-  top: "times"
+  top: "label"
   include {
     phase: TEST
   }
   image_data_param {
     source: "images_test.txt"
-    batch_size: 10
+    batch_size: 25
   }
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "ip"
+  inner_product_param {
+    num_output: 24
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
 }

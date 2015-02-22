@@ -1,3 +1,7 @@
 output/
 caffe/images
 caffe/snapshot
+caffe/images_test.txt
+caffe/images_train.txt
+caffe/*.solverstate
+caffe/*.caffemodel
