@@ -7,7 +7,7 @@ from visual import * # must import visual or vis first
 from visual.graph import *	# import graphing features
 
 
-net = caffe.Classifier('./traffic_deploy.prototxt', './snapshot_iter_2000.caffemodel')
+net = caffe.Classifier('./traffic_deploy.prototxt', './snapshot_iter_10000.caffemodel')
 
 def classify(imageurl):
     #imageurl = 'images/2015-02-04_20:36:01.346726_+0000_UTC.jpg'
@@ -31,7 +31,7 @@ for filename in os.listdir('images')[-500:]:
     pTime = prediction[1]
     diff = abs(time - pTime)
     if diff > 12:
-        diff -= 12
+        diff = 24 - diff
     timeI[time] += diff
     timeC[time] += 1
     total += diff

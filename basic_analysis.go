@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	//"sort"
+	"math"
 	"strings"
 	"time"
 )
@@ -75,16 +76,18 @@ func main() {
 			timeHours := (float64)(t.Hour()*60+t.Minute()) / 60.0
 			//timeNorm := timeHours / (24.0 * 60.0)
 			outputs = append(outputs, []float64{timeHours})
-			fileInput := []float64{meanRed, stdevRed, meanBlue, stdevBlue, meanGreen, stdevGreen}
+			fileInput := []float64{meanRed, stdevRed, meanBlue, stdevBlue, meanGreen, stdevGreen, timeHours}
 			inputs = append(inputs, fileInput)
 
-			redPoints = append(redPoints, XY{timeHours, meanRed})
-			greenPoints = append(greenPoints, XY{timeHours, meanGreen})
-			bluePoints = append(bluePoints, XY{timeHours, meanBlue})
+			if count < 9500 {
+				redPoints = append(redPoints, XY{timeHours, meanRed})
+				greenPoints = append(greenPoints, XY{timeHours, meanGreen})
+				bluePoints = append(bluePoints, XY{timeHours, meanBlue})
+			}
 
 			count += 1
 			mw.Destroy()
-			if count > 50000 {
+			if count > 10000 {
 				break
 			}
 		}
@@ -110,6 +113,56 @@ func main() {
 
 	// Save the plot to a PNG file.
 	if err := p.Save(11, 8.5, "points.png"); err != nil {
+		panic(err)
+	}
+	testSum := 0.0
+	testCount := 0.0
+	sumI := make([]float64, 24)
+	sumC := make([]float64, 24)
+	for _, file := range inputs[9500:] {
+		minDiff := 999999999999.0
+		minInput := -1.0
+		for _, search := range inputs[:9500] {
+			diff := math.Sqrt(math.Pow(file[0]-search[0], 2) +
+				math.Pow(file[2]-search[2], 2) +
+				math.Pow(file[4]-search[4], 2))
+			if diff < minDiff {
+				minInput = search[6]
+				minDiff = diff
+			}
+		}
+		timeDiff := math.Abs(minInput - file[6])
+		if timeDiff > 12 {
+			timeDiff = 24 - timeDiff
+		}
+		testSum += timeDiff
+		testCount += 1
+		i := (int)(math.Floor(file[6]))
+		sumI[i] += timeDiff
+		sumC[i] += 1
+		log.Println("Found", file[6], timeDiff, testSum/testCount)
+	}
+
+	p, err = plot.New()
+	if err != nil {
+		panic(err)
+	}
+
+	line := make(plotter.XYs, 24)
+	for i, sum := range sumI {
+		line[i].X = (float64)(i)
+		line[i].Y = sum / sumC[i]
+	}
+
+	err = plotutil.AddLinePoints(p,
+		"Hour", line)
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Save the plot to a PNG file.
+	if err := p.Save(11, 8.5, "accuracy.png"); err != nil {
 		panic(err)
 	}
 }
