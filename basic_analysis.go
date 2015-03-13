@@ -87,9 +87,6 @@ func main() {
 
 			count += 1
 			mw.Destroy()
-			if count > 10000 {
-				break
-			}
 		}
 	}
 
@@ -119,10 +116,10 @@ func main() {
 	testCount := 0.0
 	sumI := make([]float64, 24)
 	sumC := make([]float64, 24)
-	for _, file := range inputs[9500:] {
+	for _, file := range inputs[10000:] {
 		minDiff := 999999999999.0
 		minInput := -1.0
-		for _, search := range inputs[:9500] {
+		for _, search := range inputs[:10000] {
 			diff := math.Sqrt(math.Pow(file[0]-search[0], 2) +
 				math.Pow(file[2]-search[2], 2) +
 				math.Pow(file[4]-search[4], 2))
@@ -142,6 +139,8 @@ func main() {
 		sumC[i] += 1
 		log.Println("Found", file[6], timeDiff, testSum/testCount)
 	}
+
+	log.Println("Test count", testCount)
 
 	p, err = plot.New()
 	if err != nil {

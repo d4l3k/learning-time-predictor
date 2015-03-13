@@ -1,0 +1,15 @@
+name: "traffic"
+input: "data"
+input_dim: 1
+input_dim: 3
+input_dim: 315
+input_dim: 420
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "ip"
+  inner_product_param {
+    num_output: 1
+  }
+}

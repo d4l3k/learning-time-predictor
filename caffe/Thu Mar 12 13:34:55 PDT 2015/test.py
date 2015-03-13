@@ -18,7 +18,7 @@ def classify(imageurl):
     image = caffe.io.load_image(string_buffer)
     scores = net.predict([image]).flatten()
     print(scores)
-    return scores
+    return (-scores).argsort()
 
 total = 0.0
 count = 0.0
@@ -30,7 +30,7 @@ for filename in os.listdir('images')[-500:]:
     prediction = classify('images/'+filename)
     parts = filename.split('_')
     time = parser.parse(parts[1]).time().hour
-    pTime = prediction[0]*24
+    pTime = prediction[1]
     diff = abs(time - pTime)
     if diff > 12:
         diff = 24 - diff
@@ -38,7 +38,7 @@ for filename in os.listdir('images')[-500:]:
     timeC[time] += 1
     total += diff
     count += 1
-    print("C {}: D {}, T {}, P {}, A {}, B {}".format(count, diff, time, pTime, total/count, timeI[time]/timeC[time]))
+    print("C {}: D {}, T {}, P {}, A {}, B {}".format(count, diff, time, prediction[0:10], total/count, timeI[time]/timeC[time]))
 
 f1 = gcurve(color=color.cyan)	# a graphics curve
 for x in range(0, 24):

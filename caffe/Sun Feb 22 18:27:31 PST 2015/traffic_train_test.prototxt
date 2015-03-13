@@ -1,0 +1,66 @@
+name: "traffic"
+layer {
+  name: "data"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  image_data_param {
+    source: "./images_train.txt"
+    batch_size: 25
+  }
+}
+layer {
+  name: "data"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  image_data_param {
+    source: "images_test.txt"
+    batch_size: 25
+  }
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "ip"
+  inner_product_param {
+    num_output: 1
+  }
+}
+layer {
+  name: "ip2"
+  type: "Pooling"
+  bottom: "label"
+  top: "ip2"
+  transform_param {
+    scale: 0.0006944444
+  }
+  pooling_param {
+    pool: MAX
+    kernel_size: 1 # pool over a 3x3 region
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "ip2"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "ip"
+  bottom: "ip2"
+  top: "loss"
+}

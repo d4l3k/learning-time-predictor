@@ -71,12 +71,22 @@ layer {
   bottom: "pool1"
   top: "ip"
   inner_product_param {
-    num_output: 1
+    num_output: 24
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
   }
 }
 layer {
   name: "loss"
-  type: "EuclideanLoss"
+  type: "SoftmaxWithLoss"
   bottom: "ip"
   bottom: "label"
   top: "loss"

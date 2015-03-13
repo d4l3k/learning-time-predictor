@@ -8,7 +8,7 @@ from visual.graph import *	# import graphing features
 
 
 print("########### CLASS")
-net = caffe.Classifier('./traffic_deploy.prototxt', './snapshot_iter_500.caffemodel')
+net = caffe.Classifier('./traffic_deploy.prototxt', './snapshot_iter_3500.caffemodel')
 print("########### CLASSDONE")
 
 def classify(imageurl):

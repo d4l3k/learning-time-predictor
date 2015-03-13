@@ -12,7 +12,7 @@ layer {
     batch_size: 25
   }
   transform_param {
-    scale: 0.003921569
+    scale: 0.0006944444
   }
 }
 layer {
@@ -28,50 +28,26 @@ layer {
     batch_size: 25
   }
   transform_param {
-    scale: 0.003921569
-  }
-}
-layer {
-  name: "conv1"
-  type: "Convolution"
-  bottom: "data"
-  top: "conv1"
-  param {
-    lr_mult: 1
-  }
-  param {
-    lr_mult: 2
-  }
-  convolution_param {
-    num_output: 20
-    kernel_size: 5
-    stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
-  }
-}
-layer {
-  name: "pool1"
-  type: "Pooling"
-  bottom: "conv1"
-  top: "pool1"
-  pooling_param {
-    pool: MAX
-    kernel_size: 2
-    stride: 2
+    scale: 0.0006944444
   }
 }
 layer {
   name: "ip"
   type: "InnerProduct"
-  bottom: "pool1"
+  bottom: "data"
   top: "ip"
   inner_product_param {
     num_output: 1
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
   }
 }
 layer {

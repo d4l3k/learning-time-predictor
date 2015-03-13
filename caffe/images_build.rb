@@ -20,9 +20,9 @@ Dir['../output/*/*.*'].each do |file|
   end
   timeStr = file.split('/').last.split('.jpg').first.split()
   time = Time.parse(timeStr[1])
-  hours = time.hour*60 + time.min#/60.0 + time.sec/60.0/60.0
+  hours = time.hour + time.min/60.0 + time.sec/60.0/60.0
 
-  files.push([newPath, hours])
+  files.push([newPath, hours/24.0])
 end
 files = files.map do |file|
   file.join(' ')
